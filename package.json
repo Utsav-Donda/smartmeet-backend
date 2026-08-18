@@ -31,7 +31,8 @@
     "uuid": "^9.0.0",
     "express-rate-limit": "^6.7.0",
     "pino": "^8.12.1",
-    "pino-http": "^8.3.2"
+    "pino-http": "^8.3.2",
+    "mediasoup": "^3.14.10"
   },
   "devDependencies": {
     "eslint": "^8.40.0",

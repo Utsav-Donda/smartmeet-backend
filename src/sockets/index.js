@@ -8,6 +8,7 @@ const { recordSocketEvent } = require('../utils/metrics');
 const { registerRoomEvents } = require('./roomEvents');
 const { registerSignalingEvents } = require('./signalingEvents');
 const { registerPresenceEvents } = require('./presenceEvents');
+const { registerSfuEvents } = require('./sfuEvents');
 
 /*
  * SmartMeet socket event payload convention
@@ -56,6 +57,7 @@ function initSocketServer(httpServer) {
     registerRoomEvents(io, socket);
     registerSignalingEvents(io, socket);
     registerPresenceEvents(io, socket);
+    registerSfuEvents(io, socket);
   });
 
   return io;

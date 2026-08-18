@@ -41,6 +41,20 @@ const SOCKET_EVENTS = Object.freeze({
   ROOM_KICKED: 'room:kicked',
   ROOM_FORCE_MUTED: 'room:force-muted',
   ROOM_REACTION: 'room:reaction',
+
+  // mediasoup SFU signaling — see docs/ROADMAP.md Phase 1 and
+  // services/sfuService.js. Replaces webrtc:offer/answer/ice-candidate
+  // for rooms on the SFU path; deliberately a different event namespace
+  // rather than overloading the mesh events, since the protocol shape
+  // (transport/producer/consumer, not offer/answer) is genuinely different.
+  SFU_GET_RTP_CAPABILITIES: 'sfu:get-rtp-capabilities',
+  SFU_CREATE_TRANSPORT: 'sfu:create-transport',
+  SFU_CONNECT_TRANSPORT: 'sfu:connect-transport',
+  SFU_PRODUCE: 'sfu:produce',
+  SFU_CONSUME: 'sfu:consume',
+  SFU_RESUME_CONSUMER: 'sfu:resume-consumer',
+  SFU_NEW_PRODUCER: 'sfu:new-producer',
+  SFU_PRODUCER_CLOSED: 'sfu:producer-closed',
 });
 
 // Emoji whitelist for room:reaction — keeps the payload small and prevents

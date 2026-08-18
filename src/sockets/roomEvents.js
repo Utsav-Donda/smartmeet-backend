@@ -6,16 +6,14 @@ const webrtcService = require('../services/webrtcService');
 const { Message } = require('../models');
 const { recordSocketEvent } = require('../utils/metrics');
 const logger = require('../utils/logger');
+const { socketRoomName } = require('./socketUtils');
+const { cleanupSfuPeer } = require('./sfuEvents');
 
 /**
  * Wraps event data in the standard envelope documented in sockets/index.js.
  */
 function envelope(event, data) {
   return { event, data, timestamp: new Date().toISOString() };
-}
-
-function socketRoomName(roomId) {
-  return `room:${roomId}`;
 }
 
 // Simple fixed-window rate limiter, keyed by `${socketId}:${kind}` so chat
@@ -103,6 +101,7 @@ function registerRoomEvents(io, socket) {
 
       await roomService.leaveRoom({ roomId: targetRoomId, userId: socket.user.id });
       await webrtcService.removePeerFromRoom(targetRoomId, socket.id);
+      cleanupSfuPeer(io, socket);
       await socket.leave(socketRoomName(targetRoomId));
 
       socket.to(socketRoomName(targetRoomId)).emit(

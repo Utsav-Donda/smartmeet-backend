@@ -4,6 +4,7 @@ const { SOCKET_EVENTS, DISCONNECT_REASONS } = require('../config/constants');
 const roomService = require('../services/roomService');
 const webrtcService = require('../services/webrtcService');
 const { broadcastParticipants, socketRoomName, clearRateLimitState } = require('./roomEvents');
+const { cleanupSfuPeer } = require('./sfuEvents');
 const { recordSocketEvent } = require('../utils/metrics');
 const logger = require('../utils/logger');
 
@@ -93,6 +94,7 @@ function registerPresenceEvents(io, socket) {
 
     try {
       await webrtcService.removePeerFromRoom(roomId, socket.id);
+      cleanupSfuPeer(io, socket);
       await roomService.leaveRoom({ roomId, userId: socket.user.id }).catch(() => null);
 
       io.to(socketRoomName(roomId)).emit(

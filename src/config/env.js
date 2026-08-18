@@ -46,6 +46,20 @@ const env = {
 
   logLevel: process.env.LOG_LEVEL || 'info',
   enableMetrics: toBool(process.env.ENABLE_METRICS, true),
+
+  mediasoup: {
+    // Number of mediasoup Worker subprocesses to spawn at boot — one per
+    // logical CPU is the standard pattern, capped so a big host doesn't
+    // spawn an unreasonable number for a dev/small-deployment box.
+    numWorkers: toInt(process.env.MEDIASOUP_NUM_WORKERS, Math.min(require('os').cpus().length, 4)),
+    minPort: toInt(process.env.MEDIASOUP_MIN_PORT, 40000),
+    maxPort: toInt(process.env.MEDIASOUP_MAX_PORT, 40099),
+    // The IP clients should actually send/receive RTP to/from — must be a
+    // real reachable address (LAN IP for local testing, the box's public
+    // IP in production), NOT 127.0.0.1/0.0.0.0, or every client behind a
+    // NAT will fail to connect their WebRtcTransport.
+    announcedIp: process.env.MEDIASOUP_ANNOUNCED_IP || '127.0.0.1',
+  },
 };
 
 function validateEnv() {

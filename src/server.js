@@ -7,11 +7,23 @@ const logger = require('./utils/logger');
 const { connectDatabase } = require('./config/database');
 const { connectRedis } = require('./config/redis');
 const { initSocketServer } = require('./sockets');
+const sfuService = require('./services/sfuService');
 
 async function start() {
   try {
     await connectDatabase();
     await connectRedis();
+    // Spawns the mediasoup Worker subprocesses once at boot — must finish
+    // before any sfu:* socket event can be handled (sfuService.calls
+    // creation assumes at least one worker exists). Failure here degrades
+    // to "SFU calling unavailable" (see sfuService.isAvailable) rather
+    // than taking down the whole backend — mesh calling, chat, auth, etc.
+    // don't depend on it.
+    try {
+      await sfuService.init();
+    } catch (err) {
+      logger.error({ err }, 'mediasoup worker startup failed — SFU calling will be unavailable this run');
+    }
 
     const httpServer = http.createServer(app);
     const io = initSocketServer(httpServer);
